@@ -1,11 +1,22 @@
 #!/usr/bin/python3
 import xml.etree.ElementTree as ET
 import xlsxwriter
+import argparse
+
 from model.movie import *
 
 def main():
-    rutaficherotuyas = '/home/rafa/Descargas/xbmc.xml'
-    rutaficherocomparar = '/home/rafa/Descargas/luis.xml'
+
+    parser = argparse.ArgumentParser('Compare two XBMC libraries')
+
+    parser.add_argument('libraryfile', nargs=2)
+    parser.add_argument('outputfile', nargs=1)
+
+    args = parser.parse_args()
+
+    rutaficherotuyas = args.libraryfile[0]
+    rutaficherocomparar = args.libraryfile[1]
+
     tuspelis = processxml(rutaficherotuyas)
     comparar = processxml(rutaficherocomparar)
     listano = []
@@ -18,11 +29,11 @@ def main():
                if pelitengo.iden == mov.iden:
                     if mov.reswidth > pelitengo.reswidth or len(mov.dual) > len(pelitengo.dual): 
                         listamejor.append(mov)
-    movielist2excel(listano, listamejor);
+    movielist2excel(listano, listamejor, args.outputfile);
     
-def movielist2excel(inexistentes, mejorables):
+def movielist2excel(inexistentes, mejorables, destino):
     print()
-    workbook = xlsxwriter.Workbook('/home/rafa/Documentos/listado.xlsx')
+    workbook = xlsxwriter.Workbook(destino)
     listatmejorablesws = workbook.add_worksheet()
     listatmejorablesws.name = 'Mejorables'
     listanows = workbook.add_worksheet()
